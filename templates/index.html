@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math RPG Battles - Duelo de Conjuntos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Librería Socket.IO para el multijugador 1v1 en tiempo real -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+
+    <!-- ================= PANTALLA DE LOBBY / LOGIN ================= -->
+    <div class="lobby-container" id="lobby-screen">
+        <div class="lobby-card">
+            <h1 class="game-title">⚔️ MATH RPG BATTLES ⚔️</h1>
+            <p class="game-subtitle">Duelo de Teoría de Conjuntos</p>
+            
+            <div class="login-group">
+                <label for="username-input">Nombre de tu Personaje:</label>
+                <input type="text" id="username-input" placeholder="Ej: Gauss, Ada, Mago..." maxlength="15" autocomplete="off" />
+            </div>
+
+            <div class="lobby-actions">
+                <button class="btn btn-practice" id="btn-practice">🧙‍♂️ Modo Práctica (Solo vs IA)</button>
+                
+                <div class="divider">
+                    <span>⚔️ DUELO 1 VS 1 ONLINE ⚔️</span>
+                </div>
+
+                <button class="btn btn-create" id="btn-create-room">🏰 Crear Sala 1v1</button>
+                
+                <div class="join-group">
+                    <input type="text" id="room-code-input" placeholder="CÓDIGO (EJ: ABCD)" maxlength="4" autocomplete="off" />
+                    <button class="btn btn-join" id="btn-join-room">🔗 Unirse a Sala</button>
+                </div>
+            </div>
+
+            <!-- Caja de espera para cuando creas una sala -->
+            <div class="waiting-box" id="waiting-box" style="display: none;">
+                <p>Sala creada con éxito:</p>
+                <div class="room-code-badge" id="display-room-code">----</div>
+                <p class="blink-text">⏳ Esperando a que el Rival ingrese este código...</p>
+                <button class="btn btn-cancel" id="btn-cancel-room">Cancelar</button>
+            </div>
+
+            <div class="lobby-error" id="lobby-error"></div>
+        </div>
+    </div>
+
+    <!-- ================= PANTALLA DE BATALLA ================= -->
+    <div class="battle-container" id="battle-screen" style="display: none;">
+        
+        <!-- Header de la sala (si es 1v1) -->
+        <div class="battle-header" id="battle-header">
+            <span id="battle-mode-badge" class="badge">⚔️ Modo 1v1 | Sala: <b id="current-room-badge">----</b></span>
+            <button class="btn-leave" id="btn-leave-battle">🚪 Salir</button>
+        </div>
+
+        <!-- Zona del Rival (Arriba derecha) -->
+        <div class="enemy-section">
+            <div class="stats-box">
+                <h3 id="enemy-name">Rival Matemático</h3>
+                <div class="hp-bar-bg"><div class="hp-bar" id="enemy-hp"></div></div>
+                <p>HP: <span id="enemy-hp-text">100</span>/100</p>
+            </div>
+            <div class="sprite enemy-sprite" id="enemy-sprite">👾</div>
+        </div>
+
+        <!-- Zona del Jugador (Abajo izquierda) -->
+        <div class="player-section">
+            <div class="sprite player-sprite" id="player-sprite">🧙‍♂️</div>
+            <div class="stats-box">
+                <h3 id="player-name">Tu Personaje</h3>
+                <div class="hp-bar-bg"><div class="hp-bar" id="player-hp"></div></div>
+                <p>HP: <span id="player-hp-text">100</span>/100</p>
+            </div>
+        </div>
+
+        <!-- Interfaz Inferior (Diálogo, Diagrama y Botones) -->
+        <div class="ui-section">
+            <div class="dialogue-box" id="dialogue-box">
+                <div id="dialogue-text">¡Un Rival salvaje te desafía a un duelo de conjuntos! Elige tu ataque.</div>
+                <div id="diagram-container" class="diagram-container"></div>
+            </div>
+            
+            <!-- Menú de los 5 Ataques Temáticos -->
+            <div class="action-menu" id="action-menu">
+                <button class="attack-btn" data-categoria="operaciones">1. ⚡ Operaciones</button>
+                <button class="attack-btn" data-categoria="definiciones_potencia">2. 📜 Notación y Potencia</button>
+                <button class="attack-btn" data-categoria="diagramas_venn">3. 🖼️ Diagramas de Venn</button>
+                <button class="attack-btn" data-categoria="leyes_algebra">4. ⚖️ Leyes de Conjuntos</button>
+                <button class="attack-btn full-width-attack" data-categoria="cardinalidad">5. 🔢 Cardinalidad e Inclusión</button>
+            </div>
+
+            <!-- Menú de Opciones de Respuesta -->
+            <div class="question-menu" id="question-menu">
+                <button class="option-btn"></button>
+                <button class="option-btn"></button>
+                <button class="option-btn"></button>
+                <button class="option-btn"></button>
+            </div>
+
+            <!-- Menú de Fin de Combate / Revancha -->
+            <div class="restart-menu" id="restart-menu">
+                <button class="restart-btn" id="restart-btn">🔄 Revancha / Jugar de Nuevo</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
